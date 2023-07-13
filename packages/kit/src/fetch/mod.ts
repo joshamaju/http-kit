@@ -42,7 +42,7 @@ const isResponse: Interpreter["isResponse"] = function (response) {
   return response instanceof Response;
 };
 
-export function run<E, A>(
+export function provide<E, A>(
   effect: RequestEffectT<E, A>,
   interceptors?: Array<Interceptor>
 ) {
@@ -70,4 +70,4 @@ export function run<E, A>(
   );
 }
 
-export const execute = flow(run, Effect.runPromiseEither);
+export const execute = flow(provide, Effect.runPromiseEither);
