@@ -1,5 +1,4 @@
 import * as E from "@effect/io/Effect";
-import color from "kleur";
 import { Interpreter } from "../interpreter.js";
 import { Req, Res } from "../types.js";
 import { Interceptor } from "./types.js";
@@ -18,7 +17,7 @@ export function execute(request: Request, interceptors?: Array<Interceptor>) {
         const { name = "(anonymous)" } = interceptor;
         const run = interceptor.request.bind(interceptor);
 
-        yield* s(E.logInfo(color.red(`Running request interceptor: ${name}`)));
+        yield* s(E.logInfo(`Running request interceptor: ${name}`));
         const result = yield* s(run(mutable_request));
         yield* s(E.logInfo(`Request interceptor exited: ${name}`));
 
