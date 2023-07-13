@@ -1,13 +1,13 @@
-import * as Effect from "@effect/io/Effect";
+import * as E from "@effect/io/Effect";
+import color from "kleur";
 import { Interpreter } from "../interpreter.js";
 import { Req, Res } from "../types.js";
 import { Interceptor } from "./types.js";
-import color from "kleur";
 
 export function execute(request: Request, interceptors?: Array<Interceptor>) {
-  return Effect.gen(function* (s) {
-    let mutated_request = request;
-    let request_or_response: Req | Res = request;
+  return E.gen(function* (s) {
+    let mutable_request = request;
+    let request_response: Req | Res = request;
 
     const interpreter = yield* s(Interpreter);
 
@@ -16,54 +16,44 @@ export function execute(request: Request, interceptors?: Array<Interceptor>) {
         if (!interceptor.request) continue;
 
         const { name = "(anonymous)" } = interceptor;
+        const run = interceptor.request.bind(interceptor);
 
-        yield s(
-          Effect.logInfo(color.red(`Running request interceptor: ${name}`))
-        );
-
-        const result = yield* s(
-          interceptor.request.bind(interceptor)(mutated_request)
-        );
-
-        yield s(Effect.logInfo(`Request interceptor exited: ${name}`));
+        yield* s(E.logInfo(color.red(`Running request interceptor: ${name}`)));
+        const result = yield* s(run(mutable_request));
+        yield* s(E.logInfo(`Request interceptor exited: ${name}`));
 
         if (interpreter.isRequest(result)) {
-          mutated_request = result;
-          request_or_response = result;
+          mutable_request = result;
+          request_response = result;
         } else {
-          request_or_response = result;
-          yield s(
-            Effect.logInfo(`Returning early from request interceptor: ${name}`)
-          );
+          request_response = result;
+          yield s(E.logInfo(`Returning early from interceptor: ${name}`));
           break;
         }
       }
     }
 
-    yield s(Effect.logInfo("Executing request"));
+    yield* s(E.logInfo("Executing request..."));
 
-    let mutated_res = interpreter.isResponse(request_or_response)
-      ? request_or_response
-      : yield* s(interpreter.execute(mutated_request));
+    let mutable_response = interpreter.isResponse(request_response)
+      ? request_response
+      : yield* s(interpreter.execute(mutable_request));
 
-    yield s(Effect.logInfo("Finished executing request"));
+    yield* s(E.logInfo("Finished executing request"));
 
     if (interceptors) {
       for (const interceptor of interceptors) {
         if (!interceptor.response) continue;
 
+        const fn = interceptor.response.bind(interceptor);
         const { name = "(anonymous)" } = interceptor;
 
-        yield s(Effect.logInfo(`Running response interceptor: ${name}`));
-
-        mutated_res = yield* s(
-          interceptor.response.bind(interceptor)(mutated_res, mutated_request)
-        );
-
-        yield s(Effect.logInfo(`Finished response interceptor: ${name}`));
+        yield* s(E.logInfo(`Running response interceptor: ${name}`));
+        mutable_response = yield* s(fn(mutable_response, mutable_request));
+        yield* s(E.logInfo(`Finished response interceptor: ${name}`));
       }
     }
 
-    return mutated_res;
+    return mutable_response;
   });
 }

@@ -7,7 +7,7 @@ import { Err, RequestEffectT } from "../types.js";
 
 export class ApplicationError extends Err {
   readonly _tag = "ApplicationError";
-  constructor(readonly message: string, readonly originError?: unknown) {
+  constructor(readonly message: string, readonly originalError?: unknown) {
     super(message);
   }
 }

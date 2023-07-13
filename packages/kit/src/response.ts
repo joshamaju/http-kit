@@ -19,7 +19,7 @@ export class StatusError extends Err {
 }
 
 export function parseJson<T = unknown>() {
-  return <E>(effect: RequestEffectT<E>) => {
+  return (effect: RequestEffect) => {
     return pipe(
       effect,
       Effect.flatMap((res) =>
@@ -33,7 +33,7 @@ export function parseJson<T = unknown>() {
 }
 
 export function filterStatus(func: (status: number) => boolean) {
-  return <E>(effect: RequestEffectT<E>) => {
+  return (effect: RequestEffect) => {
     return pipe(
       effect,
       Effect.filterOrElseWith(
