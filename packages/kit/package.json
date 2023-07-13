@@ -4,7 +4,8 @@
   "description": "",
   "type": "module",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "http://localhost:4873"
   },
   "files": [
     "dist"
