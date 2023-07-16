@@ -9,7 +9,3 @@
 - Inversion of control i.e Dependency injection
 - Extendable using adapters
 - Request and Response utilities
-
-Create composable fetch requests
-Dependency injection
-Interceptors
