@@ -1,6 +1,7 @@
 import * as Effect from "@effect/io/Effect";
-import type { Req, Err, Res } from "../types.js";
+import type { Req, Res } from "../types.js";
 import type { Interpreter } from "../interpreter.js";
+import { Err } from "../exception.js";
 
 export interface RequestInterceptor {
   (req: Req): Effect.Effect<Interpreter, Err, Req | Res>;

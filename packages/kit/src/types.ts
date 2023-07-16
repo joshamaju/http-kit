@@ -1,12 +1,6 @@
 import type * as Effect from "@effect/io/Effect";
 import { Interpreter } from "./interpreter.js";
-
-// export type Err = Error;
-
-export abstract class Err {
-  abstract readonly _tag: string;
-  constructor(readonly message: string) {}
-}
+import { Err } from "./exception.js";
 
 export type Req = Request;
 

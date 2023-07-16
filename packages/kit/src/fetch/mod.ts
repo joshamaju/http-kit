@@ -3,18 +3,8 @@ import { Interceptor } from "../execute/types.js";
 import { pipe, flow } from "@effect/data/Function";
 import { Executor, Interpreter } from "../interpreter.js";
 import { execute as executor } from "../execute/mod.js";
-import { Err, RequestEffectT } from "../types.js";
-
-export class ApplicationError extends Err {
-  readonly _tag = "ApplicationError";
-  constructor(readonly message: string, readonly originalError?: unknown) {
-    super(message);
-  }
-}
-
-export class HttpError extends Err {
-  readonly _tag = "HttpError";
-}
+import { RequestEffectT } from "../types.js";
+import { ApplicationError, HttpError } from "../exception.js";
 
 const fetch_: Executor = (input, init) => {
   return Effect.tryCatchPromiseInterrupt(
