@@ -54,6 +54,10 @@
       "import": "./dist/response.js",
       "types": "./dist/response.d.ts"
     },
+    "./request": {
+      "import": "./dist/request.js",
+      "types": "./dist/request.d.ts"
+    },
     "./interpreter": {
       "import": "./dist/interpreter.js",
       "types": "./dist/interpreter.d.ts"
