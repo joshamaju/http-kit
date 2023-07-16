@@ -26,7 +26,7 @@ export function execute(request: Request, interceptors?: Array<Interceptor>) {
           request_response = result;
         } else {
           request_response = result;
-          yield s(E.logInfo(`Returning early from interceptor: ${name}`));
+          yield s(E.logDebug(`Returning early from interceptor: ${name}`));
           break;
         }
       }
