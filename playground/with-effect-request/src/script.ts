@@ -9,6 +9,8 @@ import * as Logger from "@effect/io/Logger";
 import * as Request from "@effect/io/Request";
 import * as RequestResolver from "@effect/io/RequestResolver";
 import * as LoggerLevel from "@effect/io/Logger/Level";
+import * as Schedule from "@effect/io/Schedule";
+import * as Duration from "@effect/data/Duration";
 import { json } from "http-kit/body";
 
 interface User {
@@ -40,11 +42,11 @@ class ReqRes {
     );
   }
 
-  static sendEmail(payload: { address: string; text: string }) {
+  static sendEmail({ text, address }: { address: string; text: string }) {
     return pipe(
-      request("https://api.example.demo/sendEmailBatch", {
+      request("https://reqres.in/api/users", {
         method: "POST",
-        body: json(payload),
+        body: json({ name: text, job: address }),
       }),
       filterStatusOk()
     );
@@ -139,7 +141,12 @@ const notifyOwner = (user: User) =>
 
 const program = pipe(
   getUsers,
-  Effect.flatMap(Effect.forEachDiscard(notifyOwner))
+  Effect.flatMap(Effect.forEachDiscard(notifyOwner)),
+  Effect.repeat(Schedule.fixed(Duration.seconds(10))),
+  Effect.catchAll((err) => {
+    console.log(err);
+    return Effect.fail("☠️");
+  })
 );
 
 Effect.runFork(program);
