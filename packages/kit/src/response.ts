@@ -1,6 +1,7 @@
 import { pipe } from "@effect/data/Function";
 import * as Effect from "@effect/io/Effect";
-import { Err, RequestEffect, RequestEffectT } from "./types.js";
+import { Err } from "./exception.js";
+import { RequestEffect } from "./types.js";
 
 export class JsonParseError extends Err {
   readonly _tag = "JsonParseError";

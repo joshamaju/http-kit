@@ -1,6 +1,7 @@
 import * as Ctx from "@effect/data/Context";
 import * as Effect from "@effect/io/Effect";
-import { Err, Res } from "./types.js";
+import { Res } from "./types.js";
+import { Err } from "./exception.js";
 
 export type Executor = (
   input: RequestInfo | URL,
