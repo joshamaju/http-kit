@@ -27,4 +27,4 @@ class ReqRes {
   }
 }
 
-Effect.runFork(Fetcher.run(ReqRes.getUsers(2)));
+Effect.runFork(Fetcher.provide(ReqRes.getUsers(2)));
