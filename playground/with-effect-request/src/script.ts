@@ -1,6 +1,8 @@
 import { Err, request } from "http-kit";
+import { json } from "http-kit/body";
 import * as Fetcher from "http-kit/fetch";
 import { searchParams } from "http-kit/function";
+import * as Req from "http-kit/request";
 import { JsonParseError, filterStatusOk, parseJson } from "http-kit/response";
 
 import * as Duration from "@effect/data/Duration";
@@ -9,7 +11,6 @@ import * as Effect from "@effect/io/Effect";
 import * as Request from "@effect/io/Request";
 import * as RequestResolver from "@effect/io/RequestResolver";
 import * as Schedule from "@effect/io/Schedule";
-import { json } from "http-kit/body";
 
 interface User {
   id: number;
@@ -42,10 +43,10 @@ class ReqRes {
 
   static sendEmail({ text, address }: { address: string; text: string }) {
     return pipe(
-      request("https://reqres.in/api/users", {
-        method: "POST",
-        body: json({ name: text, job: address }),
-      }),
+      Req.post(
+        "https://reqres.in/api/users",
+        json({ name: text, job: address })
+      ),
       filterStatusOk()
     );
   }
@@ -148,3 +149,8 @@ const program = pipe(
 );
 
 Effect.runFork(program);
+
+pipe(
+  Effect.succeed(10),
+  Effect.flatMap((n) => Effect.fail(""))
+);
