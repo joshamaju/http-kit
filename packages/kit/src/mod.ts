@@ -8,14 +8,14 @@ import { RequestEffect } from "./types.js";
 
 type RequestInput = string | URL;
 
-export type ReqInit = RequestInit & {
+export type ReqInit = Omit<RequestInit, "body"> & {
   search?: string;
   body?: BodyInit | ReqBody;
 };
 
 export function request(
   input: RequestInput,
-  init: ReqInit | undefined = {}
+  { body, ...init }: ReqInit | undefined = {}
 ): RequestEffect {
   return pipe(
     Interpreter,
@@ -24,23 +24,19 @@ export function request(
 
       if (init?.search) url.search = init.search;
 
-      let new_init = { ...init };
+      let new_init = { ...init } as RequestInit;
 
-      if (new_init) {
-        let new_body = new_init.body;
+      if (isBody(body)) {
+        const headers = interpreter.createHeader(new_init.headers);
 
-        if (isBody(new_body)) {
-          const headers = interpreter.createHeader(new_init.headers);
-
-          for (const key in new_body?.headers) {
-            if (Object.prototype.hasOwnProperty.call(new_body.headers, key)) {
-              if (!headers.has(key)) headers.set(key, new_body.headers[key]);
-            }
+        for (const key in body?.headers) {
+          if (Object.prototype.hasOwnProperty.call(body.headers, key)) {
+            if (!headers.has(key)) headers.set(key, body.headers[key]);
           }
-
-          new_init.headers = headers;
-          new_init.body = new_body.value;
         }
+
+        new_init.headers = headers;
+        new_init.body = body.value;
       }
 
       return interpreter.execute(url, new_init);

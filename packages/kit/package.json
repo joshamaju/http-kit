@@ -13,7 +13,7 @@
     "build": "tsc",
     "dev": "tsc --w",
     "clean": "rimraf dist",
-    "prepublish": "clean && tsc"
+    "prepublish": "pnpm clean && tsc"
   },
   "keywords": [
     "http",
@@ -47,6 +47,10 @@
     "./response": {
       "import": "./dist/response.js",
       "types": "./dist/response.d.ts"
+    },
+    "./interpreter": {
+      "import": "./dist/interpreter.js",
+      "types": "./dist/interpreter.d.ts"
     }
   },
   "devDependencies": {
