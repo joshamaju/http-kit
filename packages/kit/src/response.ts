@@ -1,7 +1,7 @@
 import { pipe } from "@effect/data/Function";
 import * as Effect from "@effect/io/Effect";
 import { Err } from "./exception.js";
-import { RequestEffect } from "./types.js";
+import { Res } from "./types.js";
 
 export class JsonParseError extends Err {
   readonly _tag = "JsonParseError";
@@ -19,8 +19,8 @@ export class StatusError extends Err {
   }
 }
 
-export function parseJson<T = unknown>() {
-  return (effect: RequestEffect) => {
+export function parseJson<T>() {
+  return <A extends Res, R, E>(effect: Effect.Effect<R, E, A>) => {
     return pipe(
       effect,
       Effect.flatMap((res) =>
@@ -33,8 +33,8 @@ export function parseJson<T = unknown>() {
   };
 }
 
-export function filterStatus(func: (status: number) => boolean) {
-  return (effect: RequestEffect) => {
+export function filterStatus<A extends Res>(func: (status: number) => boolean) {
+  return <R, E>(effect: Effect.Effect<R, E, A>) => {
     return pipe(
       effect,
       Effect.filterOrElseWith(
