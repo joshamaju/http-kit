@@ -4,8 +4,7 @@
   "description": "Platform agnostic fetch kit for the Effect package",
   "type": "module",
   "publishConfig": {
-    "access": "public",
-    "registry": "http://localhost:4873"
+    "access": "public"
   },
   "files": [
     "dist"
