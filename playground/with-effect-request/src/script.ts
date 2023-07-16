@@ -3,14 +3,12 @@ import * as Fetcher from "http-kit/fetch";
 import { searchParams } from "http-kit/function";
 import { JsonParseError, filterStatusOk, parseJson } from "http-kit/response";
 
+import * as Duration from "@effect/data/Duration";
 import { pipe } from "@effect/data/Function";
 import * as Effect from "@effect/io/Effect";
-import * as Logger from "@effect/io/Logger";
 import * as Request from "@effect/io/Request";
 import * as RequestResolver from "@effect/io/RequestResolver";
-import * as LoggerLevel from "@effect/io/Logger/Level";
 import * as Schedule from "@effect/io/Schedule";
-import * as Duration from "@effect/data/Duration";
 import { json } from "http-kit/body";
 
 interface User {
@@ -117,7 +115,7 @@ const SendEmailResolver = RequestResolver.makeBatched(
   }
 );
 
-const getUsers = Effect.request(GetUsers({}), GetUsersResolver);
+const getUsers = Effect.request(GetUsers({ page: 1 }), GetUsersResolver);
 
 const getUserById = (id: number) =>
   Effect.request(GetUserById({ id }), GetUserByIdResolver);
