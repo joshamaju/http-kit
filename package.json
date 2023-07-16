@@ -1,0 +1,13 @@
+{
+  "name": "http-ts",
+  "version": "0.0.1",
+  "description": "HTTP Kit for the Effect package",
+  "keywords": [],
+  "author": "Joshua Amaju <joshsemail4work@gmail.com>",
+  "homepage": "https://github.com/joshamaju/http-kit",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshamaju/http-kit"
+  }
+}

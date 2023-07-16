@@ -1,8 +1,14 @@
 {
   "name": "http-kit",
   "version": "0.0.1",
-  "description": "Platform agnostic fetch kit for the Effect package",
   "type": "module",
+  "description": "Platform agnostic fetch kit for the Effect package",
+  "homepage": "https://github.com/joshamaju/http-kit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshamaju/http-kit",
+    "directory": "packages/kit"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -24,8 +30,8 @@
     "effect-ts",
     "xmlhttprequest"
   ],
-  "author": "Joshua Amaju",
-  "license": "ISC",
+  "author": "Joshua Amaju <joshsemail4work@gmail.com>",
+  "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
     ".": {
