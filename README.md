@@ -3,7 +3,7 @@
 ## Features
 
 - Supports Request and Response interceptors
-- Uses Native Web Platform APIs
+- Native Web Platform APIs
 - Type safety, correctly typed responses and errors
 - Cross platform i.e Deno, Node etc
 - Inversion of control i.e Dependency injection

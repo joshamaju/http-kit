@@ -3,7 +3,7 @@ import { Interpreter } from "../interpreter.js";
 import { Req, Res } from "../types.js";
 import { Interceptor } from "./types.js";
 
-export function execute(request: Request, interceptors?: Array<Interceptor>) {
+export function execute(request: Req, interceptors?: Array<Interceptor>) {
   return E.gen(function* (s) {
     let mutable_request = request;
     let request_response: Req | Res = request;
@@ -21,13 +21,13 @@ export function execute(request: Request, interceptors?: Array<Interceptor>) {
         const result = yield* s(run(mutable_request));
         yield* s(E.logInfo(`Request interceptor exited: ${name}`));
 
-        if (interpreter.isRequest(result)) {
-          mutable_request = result;
-          request_response = result;
-        } else {
+        if (interpreter.isResponse(result)) {
           request_response = result;
           yield s(E.logDebug(`Returning early from interceptor: ${name}`));
           break;
+        } else {
+          mutable_request = result;
+          request_response = result;
         }
       }
     }

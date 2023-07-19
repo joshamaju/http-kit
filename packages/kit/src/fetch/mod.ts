@@ -6,9 +6,9 @@ import { execute as executor } from "../execute/mod.js";
 import { RequestEffectT } from "../types.js";
 import { ApplicationError, HttpError } from "../exception.js";
 
-const fetch_: Executor = (input, init) => {
+const fetch_: Executor = (req) => {
   return Effect.tryCatchPromiseInterrupt(
-    (signal) => fetch(input, { ...init, signal }),
+    (signal) => fetch(req.url, { ...(req.init as RequestInit), signal }),
     (error) =>
       error instanceof Error
         ? error.name === "NetworkError"
@@ -18,18 +18,34 @@ const fetch_: Executor = (input, init) => {
   );
 };
 
-const createHeader: Interpreter["createHeader"] = function (headers) {
+const newHeaders: Interpreter["newHeaders"] = function (headers) {
   return new Headers(headers);
 };
 
-// @ts-expect-error
-const isRequest: Interpreter["isRequest"] = function (request) {
-  return request instanceof Request;
+const newURL: Interpreter["newURL"] = function (url) {
+  return new URL(url);
 };
+
+// const newRequest: Interpreter["newRequest"] = function (input, init) {
+//   return new Request(input, init);
+// };
+
+// const isRequest: Interpreter["isRequest"] = function (request) {
+//   return request instanceof Request;
+// };
 
 // @ts-expect-error
 const isResponse: Interpreter["isResponse"] = function (response) {
   return response instanceof Response;
+};
+
+const service: Interpreter = {
+  newURL,
+  // isRequest,
+  isResponse,
+  newHeaders,
+  // newRequest,
+  execute: fetch_,
 };
 
 export function provide<E, A>(
@@ -41,18 +57,11 @@ export function provide<E, A>(
     Effect.provideService(
       Interpreter,
       Interpreter.of({
-        isRequest,
-        isResponse,
-        createHeader,
-        execute(input, init) {
+        ...service,
+        execute(request) {
           return pipe(
-            executor(new Request(input, init), interceptors),
-            Effect.provideService(Interpreter, {
-              isRequest,
-              isResponse,
-              createHeader,
-              execute: fetch_,
-            })
+            executor(request, interceptors),
+            Effect.provideService(Interpreter, service)
           );
         },
       })
