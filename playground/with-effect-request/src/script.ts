@@ -1,8 +1,8 @@
-import { Err, request } from "http-kit";
+import { Err } from "http-kit";
 import { json } from "http-kit/body";
+import * as Req from "http-kit/request";
 import * as Fetcher from "http-kit/fetch";
 import { searchParams } from "http-kit/function";
-import * as Req from "http-kit/request";
 import { JsonParseError, filterStatusOk, parseJson } from "http-kit/response";
 
 import * as Duration from "@effect/data/Duration";
@@ -23,7 +23,7 @@ interface User {
 class ReqRes {
   static getUsers(page?: number) {
     return pipe(
-      request("https://reqres.in/api/users/", {
+      Req.get("https://reqres.in/api/users/", {
         search: searchParams({ page }),
       }),
       filterStatusOk(),
@@ -34,7 +34,7 @@ class ReqRes {
 
   static getUser(id: number) {
     return pipe(
-      request(`https://reqres.in/api/users/${id}`),
+      Req.get(`https://reqres.in/api/users/${id}`),
       filterStatusOk(),
       parseJson<{ data: User }>(),
       Effect.map((res) => res.data)
