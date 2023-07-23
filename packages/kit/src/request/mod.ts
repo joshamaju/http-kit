@@ -10,32 +10,32 @@ export function request(
   init: RequestInit_ | undefined = {}
 ): RequestEffect {
   return Effect.flatMap(Interpreter, (interpreter) => {
-    const url =
-      typeof input === "string"
-        ? interpreter.newURL(input)
-        : input instanceof Request
-        ? interpreter.newURL(input.url)
-        : input;
+    let url =
+      input instanceof Request
+        ? input.url
+        : typeof input === "string"
+        ? input
+        : input.toString();
 
     let init_ = input instanceof Request ? input.init : init;
 
-    if (init_) {
-      if (init_.search) url.search = init_.search;
+    if (init_.search) {
+      url += (url.indexOf("?") === -1 ? "?" : "&") + init_.search;
+    }
 
-      if (isBody(init_.body)) {
-        const body = init_.body;
+    if (isBody(init_.body)) {
+      const body = init_.body;
 
-        const headers = interpreter.newHeaders(init_.headers);
+      const headers = interpreter.newHeaders(init_.headers);
 
-        for (const key in body.headers) {
-          if (Object.prototype.hasOwnProperty.call(body.headers, key)) {
-            if (!headers.has(key)) headers.set(key, body.headers[key]);
-          }
+      for (const key in body.headers) {
+        if (Object.prototype.hasOwnProperty.call(body.headers, key)) {
+          if (!headers.has(key)) headers.set(key, body.headers[key]);
         }
-
-        init_.headers = headers;
-        init_.body = body.value;
       }
+
+      init_.headers = headers;
+      init_.body = body.value;
     }
 
     return interpreter.execute(new Request(url, init_));
