@@ -1,6 +1,6 @@
 {
   "name": "http-kit",
-  "version": "0.0.3",
+  "version": "0.1.0-beta",
   "type": "module",
   "description": "Platform agnostic fetch kit for the Effect package",
   "homepage": "https://github.com/joshamaju/http-kit",
@@ -55,8 +55,8 @@
       "types": "./dist/response.d.ts"
     },
     "./request": {
-      "import": "./dist/request.js",
-      "types": "./dist/request.d.ts"
+      "import": "./dist/request/index.js",
+      "types": "./dist/request/index.d.ts"
     },
     "./interpreter": {
       "import": "./dist/interpreter.js",
