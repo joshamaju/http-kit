@@ -22,16 +22,8 @@ const newHeaders: Interpreter["newHeaders"] = function (headers) {
   return new Headers(headers);
 };
 
-const newURL: Interpreter["newURL"] = function (url) {
-  return new URL(url);
-};
-
-// const newRequest: Interpreter["newRequest"] = function (input, init) {
-//   return new Request(input, init);
-// };
-
-// const isRequest: Interpreter["isRequest"] = function (request) {
-//   return request instanceof Request;
+// const newURL: Interpreter["newURL"] = function (url) {
+//   return new URL(url);
 // };
 
 // @ts-expect-error
@@ -40,11 +32,9 @@ const isResponse: Interpreter["isResponse"] = function (response) {
 };
 
 const service: Interpreter = {
-  newURL,
-  // isRequest,
+  // newURL,
   isResponse,
   newHeaders,
-  // newRequest,
   execute: fetch_,
 };
 

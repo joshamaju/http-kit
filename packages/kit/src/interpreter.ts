@@ -7,7 +7,7 @@ export type Executor = (request: Req) => Effect.Effect<never, Err, Res>;
 
 export interface Interpreter {
   execute: Executor;
-  newURL: (url: string) => URL;
+  // newURL: (url: string) => URL;
   // isRequest(request: unknown): request is Request;
   isResponse: (response: unknown) => response is Response;
   newHeaders: (headers?: RequestInit["headers"]) => Headers;
