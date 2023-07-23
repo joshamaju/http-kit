@@ -17,13 +17,17 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
         const { name = "(anonymous)" } = interceptor;
         const run = interceptor.request.bind(interceptor);
 
-        yield* s(E.logInfo(`Running request interceptor: ${name}`));
-        const result = yield* s(run(mutable_request));
-        yield* s(E.logInfo(`Request interceptor exited: ${name}`));
+        const result = yield* s(
+          E.logDebug("Executing interceptor"),
+          E.flatMap(() => run(mutable_request)),
+          E.tap(() => E.logDebug("Exiting interceptor")),
+          E.annotateLogs("interceptor", name),
+          E.annotateLogs("type", "Request"),
+          E.logSpan("ms")
+        );
 
         if (interpreter.isResponse(result)) {
           request_response = result;
-          yield s(E.logDebug(`Returning early from interceptor: ${name}`));
           break;
         } else {
           mutable_request = result;
@@ -32,24 +36,30 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
       }
     }
 
-    yield* s(E.logInfo("Executing request..."));
-
     let mutable_response = interpreter.isResponse(request_response)
       ? request_response
-      : yield* s(interpreter.execute(mutable_request));
-
-    yield* s(E.logInfo("Finished executing request"));
+      : yield* s(
+          E.logDebug("Executing request"),
+          E.flatMap(() => interpreter.execute(mutable_request)),
+          E.tap(() => E.logDebug("Request done")),
+          E.logSpan("ms")
+        );
 
     if (interceptors) {
       for (const interceptor of interceptors) {
         if (!interceptor.response) continue;
 
-        const fn = interceptor.response.bind(interceptor);
         const { name = "(anonymous)" } = interceptor;
+        const run = interceptor.response.bind(interceptor);
 
-        yield* s(E.logInfo(`Running response interceptor: ${name}`));
-        mutable_response = yield* s(fn(mutable_response, mutable_request));
-        yield* s(E.logInfo(`Finished response interceptor: ${name}`));
+        mutable_response = yield* s(
+          E.logDebug("Executing interceptor"),
+          E.flatMap(() => run(mutable_response, mutable_request)),
+          E.tap(() => E.logDebug("Exiting interceptor")),
+          E.annotateLogs("interceptor", name),
+          E.annotateLogs("type", "Response"),
+          E.logSpan("ms")
+        );
       }
     }
 
