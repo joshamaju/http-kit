@@ -1,7 +1,6 @@
-import { request } from "http-kit";
 import * as Fetcher from "http-kit/fetch";
-import * as Req from "http-kit/request";
 import { searchParams } from "http-kit/function";
+import * as Req from "http-kit/request";
 import { filterStatusOk, parseJson } from "http-kit/response";
 
 import { pipe } from "@effect/data/Function";
@@ -42,10 +41,18 @@ Effect.runFork(
       {
         request(req) {
           const clone = req.clone();
+
+          const headers = new Headers(clone.init.headers);
+
+          headers.set("Authorization", "Bearer token");
+
           const url = isAbsolute(clone.url)
             ? clone.url
             : new URL(clone.url, "https://reqres.in");
-          return Effect.succeed(new Req.Request(url, clone.init));
+
+          return Effect.succeed(
+            new Req.Request(url, { ...clone.init, headers })
+          );
         },
         response(res) {
           return Effect.succeed(res);
