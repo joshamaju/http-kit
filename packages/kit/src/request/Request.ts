@@ -5,18 +5,18 @@ export type RequestInit_ = Omit<RequestInit, "body" | "signal"> & {
   body?: BodyInit | RequestBody;
 };
 
-export class Request {
+export class HttpRequest {
   readonly _tag = "HttpRequest";
 
   readonly url: string;
-  readonly init: RequestInit_ & { method: string };
+  readonly init: RequestInit_;
 
   constructor(input: string | URL, init?: RequestInit_) {
     this.url = typeof input === "string" ? input : input.toString();
     this.init = { ...init, method: init?.method ?? "GET" };
   }
 
-  clone(): Request {
-    return new Request(this.url, this.init ? { ...this.init } : undefined);
+  clone(): HttpRequest {
+    return new HttpRequest(this.url, this.init ? { ...this.init } : undefined);
   }
 }

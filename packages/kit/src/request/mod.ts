@@ -3,21 +3,21 @@ import * as Effect from "@effect/io/Effect";
 import { isBody } from "../body/util.js";
 import { Interpreter } from "../interpreter.js";
 import { RequestEffect } from "../types.js";
-import { Request, RequestInit_ } from "./Request.js";
+import { HttpRequest, RequestInit_ } from "./Request.js";
 
 export function request(
-  input: Request | string | URL,
+  input: HttpRequest | string | URL,
   init: RequestInit_ | undefined = {}
 ): RequestEffect {
   return Effect.flatMap(Interpreter, (interpreter) => {
     let url =
-      input instanceof Request
+      input instanceof HttpRequest
         ? input.url
         : typeof input === "string"
         ? input
         : input.toString();
 
-    let init_ = input instanceof Request ? input.init : init;
+    let init_ = input instanceof HttpRequest ? input.init : init;
 
     if (init_.search) {
       url += (url.indexOf("?") === -1 ? "?" : "&") + init_.search;
@@ -38,7 +38,7 @@ export function request(
       init_.body = body.value;
     }
 
-    return interpreter.execute(new Request(url, init_));
+    return interpreter.execute(new HttpRequest(url, init_));
   });
 }
 
