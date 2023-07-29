@@ -4,23 +4,37 @@ import { searchParams } from "http-kit/function";
 import * as Req from "http-kit/request";
 import { filterStatusOk, toJson } from "http-kit/response";
 
-import { pipe } from "@effect/data/Function";
-import * as Context from "@effect/data/Context";
-import * as Option from "@effect/data/Option";
-import * as Effect from "@effect/io/Effect";
-import * as Logger from "@effect/io/Logger";
-import * as LogLevel from "@effect/io/Logger/Level";
+// import { pipe } from "@effect/data/Function";
+// import * as Context from "@effect/data/Context";
+// import * as Option from "@effect/data/Option";
+// import * as Effect from "@effect/io/Effect";
+// import * as Logger from "@effect/io/Logger";
+// import * as LogLevel from "@effect/io/Logger/Level";
+
+import * as S from "@effect/schema/Schema";
+
+import { Effect, Option, Context, pipe, Logger, LoggerLevel } from "effect";
 
 import * as Log from "effect-log";
 import { HttpRequest } from "http-kit/request";
 
-interface User {
-  id: number;
-  email: string;
-  avatar: string;
-  last_name: string;
-  first_name: string;
-}
+// interface User {
+//   id: number;
+//   email: string;
+//   avatar: string;
+//   last_name: string;
+//   first_name: string;
+// }
+
+const User = S.struct({
+  id: S.number,
+  email: S.string,
+  avatar: S.string,
+  last_name: S.string,
+  first_name: S.string,
+});
+
+type User = S.To<typeof User>;
 
 class ReqRes {
   static getUsers(page?: number) {
@@ -35,8 +49,9 @@ class ReqRes {
       Effect.flatMap((user) => Req.get(`/api/users/${user[0].id}`)),
       filterStatusOk(),
       toJson<{ data: User }>(),
-      Effect.tap((data) => Effect.log(JSON.stringify(data)))
-      // Effect.catchAllCause(Effect.logErrorCause)
+      Effect.flatMap(S.parse(User))
+      // Effect.tap((data) => Effect.log(JSON.stringify(data))),
+      // Effect.catchAllCause(Effect.logError)
     );
   }
 }
@@ -133,9 +148,7 @@ Effect.runFork(
         },
       }
     ),
-    // Effect.provideLayer(
-    //   Logger.replace(Logger.defaultLogger, Log.pretty as any)
-    // ),
-    Logger.withMinimumLogLevel(LogLevel.Debug)
+    Effect.provideLayer(Logger.replace(Logger.defaultLogger, Log.pretty)),
+    Logger.withMinimumLogLevel(LoggerLevel.Debug)
   )
 );
