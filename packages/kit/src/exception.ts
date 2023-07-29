@@ -3,13 +3,9 @@ export abstract class Err {
   constructor(readonly message: string) {}
 }
 
-export class ApplicationError extends Err {
-  readonly _tag = "ApplicationError";
+export class HttpError extends Err {
+  readonly _tag = "HttpError";
   constructor(readonly message: string, readonly originalError?: unknown) {
     super(message);
   }
-}
-
-export class HttpError extends Err {
-  readonly _tag = "HttpError";
 }
