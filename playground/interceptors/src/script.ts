@@ -1,12 +1,9 @@
-import { request } from "http-kit";
-import * as Fetcher from "http-kit/fetch";
+import * as Kit from "http-kit";
+import * as Fetch from "http-kit/fetch";
 import { searchParams } from "http-kit/function";
-import { filterStatusOk, parseJson } from "http-kit/response";
+import * as ResKit from "http-kit/response";
 
-import { pipe } from "@effect/data/Function";
-import * as Effect from "@effect/io/Effect";
-import * as Logger from "@effect/io/Logger";
-import * as LoggerLevel from "@effect/io/Logger/Level";
+import { Effect, Logger, LoggerLevel, pipe } from "effect";
 
 import logger from "./logger.js";
 
@@ -21,19 +18,22 @@ interface User {
 class ReqRes {
   static getUsers(page?: number) {
     return pipe(
-      request("https://reqres.in/api/users/", {
+      Kit.get("https://reqres.in/api/users/", {
         search: searchParams({ page }),
       }),
-      filterStatusOk(),
-      parseJson<{ data: User }>(),
-      Effect.map((res) => res.data)
+      ResKit.filterStatusOk(),
+      ResKit.toJson<{ data: User[] }>(),
+      Effect.map((res) => res.data),
+      Effect.tap((data) => Effect.sync(() => console.log(data))),
+      Effect.catchAllCause(Effect.logError)
     );
   }
 }
 
 Effect.runFork(
   pipe(
-    Fetcher.provide(ReqRes.getUsers(2), [logger]),
+    ReqRes.getUsers(2),
+    Kit.provide(Fetch.adapter, logger),
     Logger.withMinimumLogLevel(LoggerLevel.None)
   )
 );

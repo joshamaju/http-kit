@@ -1,7 +1,7 @@
-import * as Effect from "@effect/io/Effect";
-import { Interceptor } from "http-kit";
-
 // Logger from https://github.com/honojs/hono/blob/main/src/middleware/logger/index.ts
+
+import { Effect } from "effect";
+import { Interceptor } from "http-kit";
 
 type PrintFunc = (str: string, ...rest: string[]) => void;
 
@@ -74,7 +74,7 @@ const logger: Interceptor = {
       value: { startTime: Date.now() },
     });
 
-    log(console.log, LogPrefix.Outgoing, clone.init.method, clone.url);
+    log(console.log, LogPrefix.Outgoing, clone.init.method ?? "GET", clone.url);
 
     return Effect.succeed(clone);
   },
@@ -84,7 +84,7 @@ const logger: Interceptor = {
     log(
       console.log,
       LogPrefix.Incoming,
-      req.init.method,
+      req.init.method ?? "GET",
       req.url,
       res.status,
       time(startTime)
