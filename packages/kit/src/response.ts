@@ -19,7 +19,7 @@ export class StatusError extends Err {
   }
 }
 
-export function parseJson<T>() {
+export function toJson<T>() {
   return <A extends Res, R, E>(effect: Effect.Effect<R, E, A>) => {
     return pipe(
       effect,
