@@ -1,16 +1,19 @@
 import { Err } from "http-kit";
+import * as Kit from "http-kit";
 import { json } from "http-kit/body";
 import * as Req from "http-kit/request";
-import * as Fetcher from "http-kit/fetch";
+import * as Fetch from "http-kit/fetch";
 import { searchParams } from "http-kit/function";
-import { JsonParseError, filterStatusOk, parseJson } from "http-kit/response";
+import { JsonParseError, filterStatusOk, toJson } from "http-kit/response";
 
-import * as Duration from "@effect/data/Duration";
-import { pipe } from "@effect/data/Function";
-import * as Effect from "@effect/io/Effect";
-import * as Request from "@effect/io/Request";
-import * as RequestResolver from "@effect/io/RequestResolver";
-import * as Schedule from "@effect/io/Schedule";
+import {
+  Duration,
+  pipe,
+  Effect,
+  Request,
+  RequestResolver,
+  Schedule,
+} from "effect";
 
 interface User {
   id: number;
@@ -20,33 +23,30 @@ interface User {
   first_name: string;
 }
 
+const url = "https://reqres.in/api/users";
+
 class ReqRes {
   static getUsers(page?: number) {
     return pipe(
-      Req.get("https://reqres.in/api/users/", {
-        search: searchParams({ page }),
-      }),
+      Req.get(url, { search: searchParams({ page }) }),
       filterStatusOk(),
-      parseJson<{ data: User[] }>(),
+      toJson<{ data: User[] }>(),
       Effect.map((res) => res.data)
     );
   }
 
   static getUser(id: number) {
     return pipe(
-      Req.get(`https://reqres.in/api/users/${id}`),
+      Req.get(`${url}/${id}`),
       filterStatusOk(),
-      parseJson<{ data: User }>(),
+      toJson<{ data: User }>(),
       Effect.map((res) => res.data)
     );
   }
 
   static sendEmail({ text, address }: { address: string; text: string }) {
     return pipe(
-      Req.post(
-        "https://reqres.in/api/users",
-        json({ name: text, job: address })
-      ),
+      Req.post(url, json({ name: text, job: address })),
       filterStatusOk()
     );
   }
@@ -75,7 +75,8 @@ interface SendEmail extends Request.Request<Err | JsonParseError, void> {
 const SendEmail = Request.tagged<SendEmail>("SendEmail");
 
 const GetUsersResolver = RequestResolver.fromFunctionEffect(
-  (request: GetUsers) => Fetcher.provide(ReqRes.getUsers(request.page))
+  (request: GetUsers) =>
+    pipe(ReqRes.getUsers(request.page), Kit.provide(Fetch.adapter))
 );
 
 const GetUserByIdResolver = RequestResolver.makeBatched(
@@ -83,7 +84,7 @@ const GetUserByIdResolver = RequestResolver.makeBatched(
     return pipe(
       Effect.forEach(requests, (req) => ReqRes.getUser(req.id)),
       Effect.flatMap((users) => {
-        return Effect.forEachWithIndex(requests, (req, i) => {
+        return Effect.forEach(requests, (req, i) => {
           return Request.completeEffect(req, Effect.succeed(users[i]));
         });
       }),
@@ -92,7 +93,7 @@ const GetUserByIdResolver = RequestResolver.makeBatched(
           return Request.completeEffect(request, Effect.fail(error));
         });
       }),
-      Fetcher.provide
+      Kit.provide(Fetch.adapter)
     );
   }
 );
@@ -103,7 +104,7 @@ const SendEmailResolver = RequestResolver.makeBatched(
       Effect.forEach(requests, (req) => ReqRes.sendEmail(req)),
       Effect.flatMap(() => {
         return Effect.forEach(requests, (request) => {
-          return Request.completeEffect(request, Effect.unit());
+          return Request.completeEffect(request, Effect.unit);
         });
       }),
       Effect.catchAll((error) => {
@@ -111,7 +112,7 @@ const SendEmailResolver = RequestResolver.makeBatched(
           return Request.completeEffect(request, Effect.fail(error));
         });
       }),
-      Fetcher.provide
+      Kit.provide(Fetch.adapter)
     );
   }
 );
@@ -140,7 +141,9 @@ const notifyOwner = (user: User) =>
 
 const program = pipe(
   getUsers,
-  Effect.flatMap(Effect.forEachDiscard(notifyOwner)),
+  Effect.flatMap(
+    Effect.forEach(notifyOwner, { concurrency: "unbounded", discard: true })
+  ),
   Effect.repeat(Schedule.fixed(Duration.seconds(10))),
   Effect.catchAll((err) => {
     console.log(err);
