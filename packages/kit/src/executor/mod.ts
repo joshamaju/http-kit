@@ -12,13 +12,10 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
 
     const interpreter = yield* s(Interpreter);
 
-    // let currentInterceptor: Interceptor | null = null;
-
     if (interceptors) {
       for (const interceptor of interceptors) {
         if (!interceptor.request) continue;
 
-        // currentInterceptor = interceptor;
         const { name = "(anonymous)" } = interceptor;
         const run = interceptor.request.bind(interceptor);
 
@@ -28,7 +25,7 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
           E.tap(() => E.logDebug("Exiting interceptor")),
           E.annotateLogs("interceptor", name),
           E.annotateLogs("type", "Request"),
-          E.logSpan("ms")
+          E.withLogSpan("ms")
         );
 
         if (interpreter.isResponse(result)) {
@@ -47,7 +44,7 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
           E.logDebug("Executing request"),
           E.flatMap(() => interpreter.execute(mutable_request)),
           E.tap(() => E.logDebug("Request done")),
-          E.logSpan("ms")
+          E.withLogSpan("ms")
         );
 
     if (interceptors) {
@@ -63,7 +60,7 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
           E.tap(() => E.logDebug("Exiting interceptor")),
           E.annotateLogs("interceptor", name),
           E.annotateLogs("type", "Response"),
-          E.logSpan("ms")
+          E.withLogSpan("ms")
         );
       }
     }

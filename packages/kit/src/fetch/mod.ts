@@ -3,10 +3,10 @@ import { HttpError } from "../exception.js";
 import { Executor, Interpreter } from "../interpreter.js";
 
 const fetch_: Executor = (req) => {
-  return Effect.tryCatchPromiseInterrupt(
-    (signal) => fetch(req.url, { ...(req.init as RequestInit), signal }),
-    (error) => new HttpError("Fetch error", error)
-  );
+  return Effect.tryPromiseInterrupt({
+    try: (signal) => fetch(req.url, { ...(req.init as RequestInit), signal }),
+    catch: (error) => new HttpError("Fetch error", error),
+  });
 };
 
 const newHeaders: Interpreter["newHeaders"] = function (headers) {

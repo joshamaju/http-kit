@@ -5,8 +5,8 @@ export function searchParams(input: Record<string, any>) {
 }
 
 export function url(url: string | URL, base?: string | URL) {
-  return Effect.tryCatch(
-    () => new URL(url, base),
-    () => new Error("Invalid URL")
-  );
+  return Effect.try({
+    try: () => new URL(url, base),
+    catch: () => new Error("Invalid URL"),
+  });
 }

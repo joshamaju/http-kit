@@ -1,4 +1,5 @@
 import { pipe } from "@effect/data/Function";
+import * as Predicate from "@effect/data/Predicate";
 import * as Effect from "@effect/io/Effect";
 import { Err } from "./exception.js";
 import { Res } from "./types.js";
@@ -20,30 +21,29 @@ export class StatusError extends Err {
 }
 
 export function toJson<T>() {
-  return <A extends Res, R, E>(effect: Effect.Effect<R, E, A>) => {
+  return <R, E, A extends Res>(fx: Effect.Effect<R, E, A>) => {
     return pipe(
-      effect,
-      Effect.flatMap((res) =>
-        Effect.tryCatchPromise(
-          () => res.json() as Promise<T>,
-          () => new JsonParseError(res, "Unable to parse JSON")
-        )
-      )
+      fx,
+      Effect.flatMap((res) => {
+        return Effect.tryPromise({
+          try: () => res.json() as Promise<T>,
+          catch: () => new JsonParseError(res, "Unable to parse JSON"),
+        });
+      })
     );
   };
 }
 
-export function filterStatus<A extends Res>(func: (status: number) => boolean) {
-  return <R, E>(effect: Effect.Effect<R, E, A>) => {
+export function filterStatus<A extends Res>(func: Predicate.Predicate<number>) {
+  return <R, E>(fx: Effect.Effect<R, E, A>) => {
     return pipe(
-      effect,
-      Effect.filterOrElseWith(
+      fx,
+      Effect.filterOrElse(
         (res) => func(res.status),
-        (res) => {
-          return Effect.fail(
+        (res) =>
+          Effect.fail(
             new StatusError(res, `Received invalid status code: ${res.status}`)
-          );
-        }
+          )
       )
     );
   };
