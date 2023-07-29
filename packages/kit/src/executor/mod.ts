@@ -1,7 +1,8 @@
 import { pipe } from "@effect/data/Function";
 import * as E from "@effect/io/Effect";
+import * as L from "@effect/io/Layer";
 
-import { Interpreter } from "../interpreter.js";
+import { Adapter } from "../interpreter.js";
 import { Req, Res } from "../types.js";
 import { Interceptor } from "./types.js";
 
@@ -10,7 +11,7 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
     let mutable_request = request;
     let request_response: Req | Res = request;
 
-    const interpreter = yield* s(Interpreter);
+    const interpreter = yield* s(Adapter);
 
     if (interceptors) {
       for (const interceptor of interceptors) {
@@ -69,22 +70,21 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
   });
 }
 
-export function provide(
-  interpreter: Interpreter,
+export function makeLayer(
+  adapter: Adapter,
   ...interceptors: Array<Interceptor>
 ) {
-  return <R, E, A>(fx: E.Effect<R | Interpreter, E, A>) => {
-    return pipe(
-      fx,
-      E.provideService(Interpreter, {
-        ...interpreter,
-        execute(request) {
-          return pipe(
-            execute(request, interceptors),
-            E.provideService(Interpreter, interpreter)
-          );
-        },
-      })
-    );
-  };
+  return L.succeed(Adapter, {
+    ...adapter,
+    execute(request) {
+      return pipe(
+        execute(request, interceptors),
+        E.provideService(Adapter, adapter)
+      );
+    },
+  });
+}
+
+export function provide(adapter: Adapter, ...interceptors: Array<Interceptor>) {
+  return E.provideSomeLayer(makeLayer(adapter, ...interceptors));
 }

@@ -1,7 +1,7 @@
 import * as Effect from "@effect/io/Effect";
 
 import { isBody } from "../body/util.js";
-import { Interpreter } from "../interpreter.js";
+import { Adapter } from "../interpreter.js";
 import { RequestEffect } from "../types.js";
 import { HttpRequest, RequestInit_ } from "./Request.js";
 
@@ -9,7 +9,7 @@ export function request(
   input: HttpRequest | string | URL,
   init: RequestInit_ | undefined = {}
 ): RequestEffect {
-  return Effect.flatMap(Interpreter, (interpreter) => {
+  return Effect.flatMap(Adapter, (adapter) => {
     let url =
       input instanceof HttpRequest
         ? input.url
@@ -26,7 +26,7 @@ export function request(
     if (isBody(init_.body)) {
       const body = init_.body;
 
-      const headers = interpreter.newHeaders(init_.headers);
+      const headers = adapter.newHeaders(init_.headers);
 
       for (const key in body.headers) {
         if (Object.prototype.hasOwnProperty.call(body.headers, key)) {
@@ -38,7 +38,7 @@ export function request(
       init_.body = body.value;
     }
 
-    return interpreter.execute(new HttpRequest(url, init_));
+    return adapter.execute(new HttpRequest(url, init_));
   });
 }
 

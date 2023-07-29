@@ -1,6 +1,6 @@
 import * as Effect from "@effect/io/Effect";
 import { HttpError } from "../exception.js";
-import { Executor, Interpreter } from "../interpreter.js";
+import { Executor, Adapter } from "../interpreter.js";
 
 const fetch_: Executor = (req) => {
   return Effect.tryPromiseInterrupt({
@@ -9,13 +9,13 @@ const fetch_: Executor = (req) => {
   });
 };
 
-const newHeaders: Interpreter["newHeaders"] = function (headers) {
+const newHeaders: Adapter["newHeaders"] = function (headers) {
   return new Headers(headers);
 };
 
 // @ts-expect-error
-const isResponse: Interpreter["isResponse"] = function (response) {
+const isResponse: Adapter["isResponse"] = function (response) {
   return response instanceof Response;
 };
 
-export const adapter: Interpreter = { isResponse, newHeaders, execute: fetch_ };
+export const adapter: Adapter = { isResponse, newHeaders, execute: fetch_ };
