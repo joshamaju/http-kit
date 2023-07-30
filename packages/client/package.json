@@ -1,0 +1,24 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "Joshua Amaju",
+  "license": "ISC",
+  "devDependencies": {
+    "http-kit": "workspace:^",
+    "typescript": "^5.1.6",
+    "vitest": "^0.33.0"
+  },
+  "peerDependencies": {
+    "http-kit": "workspace:^"
+  },
+  "dependencies": {
+    "@effect/data": "^0.17.0",
+    "@effect/io": "^0.36.1"
+  }
+}
