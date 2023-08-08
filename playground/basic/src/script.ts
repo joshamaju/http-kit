@@ -1,8 +1,6 @@
 import * as Kit from "http-kit";
 import * as Fetch from "http-kit/fetch";
 import { searchParams } from "http-kit/function";
-import * as ReqKit from "http-kit/request";
-import * as ResKit from "http-kit/response";
 
 import * as S from "@effect/schema/Schema";
 
@@ -22,13 +20,14 @@ const api = "https://reqres.in/api";
 
 function getUsers(page?: number) {
   return pipe(
-    ReqKit.get(`${api}/users/?age=10`, { search: searchParams({ page }) }),
-    ResKit.filterStatusOk(),
-    ResKit.toJson<{ data: User[] }>(),
-    Effect.map((_) => _.data),
-    Effect.flatMap(S.parse(S.array(User))),
-    Effect.tap((data) => Effect.sync(() => console.log(data))),
-    Effect.catchAllCause(Effect.logError)
+    Kit.get(`${api}/users/?age=10`, { search: searchParams({ page }) }),
+    Kit.filterStatusOk(),
+    // Kit.toBlob(),
+    Kit.toJson<{ data: User[] }>(),
+    Effect.map((_) => _.data)
+    // Effect.flatMap(S.parse(S.array(User))),
+    // Effect.tap((data) => Effect.sync(() => console.log(data))),
+    // Effect.catchAllCause(Effect.logError)
   );
 }
 
