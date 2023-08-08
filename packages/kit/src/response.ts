@@ -1,22 +1,22 @@
 import { pipe } from "@effect/data/Function";
 import * as Predicate from "@effect/data/Predicate";
 import * as Effect from "@effect/io/Effect";
-import { Err } from "./exception.js";
+import { HttpError } from "./exception.js";
 import { Res } from "./types.js";
 
-export class JsonParseError extends Err {
+export class JsonParseError {
   readonly _tag = "JsonParseError";
 
   constructor(readonly response: Response, readonly message: string) {
-    super(message);
+    // super(message);
   }
 }
 
-export class StatusError extends Err {
+export class StatusError {
   readonly _tag = "StatusError";
 
   constructor(readonly response: Response, readonly message: string) {
-    super(message);
+    // super(message);
   }
 }
 
@@ -33,6 +33,27 @@ export function toJson<T>() {
     );
   };
 }
+
+function to<B>(fn: (a: Res) => Promise<B>) {
+  return () =>
+    <R, E, A extends Res>(effect: Effect.Effect<R, E, A>) => {
+      return pipe(
+        effect,
+        Effect.flatMap((res) =>
+          Effect.tryPromise({
+            try: () => fn(res),
+            catch: (e) => new HttpError("Decode error", e),
+          })
+        )
+      );
+    };
+}
+
+export const toText = to((res) => res.text());
+
+export const toArrayBuffer = to((res) => res.arrayBuffer());
+
+export const toBlob = to((res) => res.blob());
 
 export function filterStatus<A extends Res>(func: Predicate.Predicate<number>) {
   return <R, E>(fx: Effect.Effect<R, E, A>) => {

@@ -1,9 +1,9 @@
 import * as Ctx from "@effect/data/Context";
 import * as Effect from "@effect/io/Effect";
 import { Res, Req } from "./types.js";
-import { Err } from "./exception.js";
+import { HttpError } from "./exception.js";
 
-export type Executor = (request: Req) => Effect.Effect<never, Err, Res>;
+export type Executor = (request: Req) => Effect.Effect<never, HttpError, Res>;
 
 export interface Adapter {
   execute: Executor;
