@@ -1,7 +1,6 @@
-import * as Kit from "http-kit";
+import * as Http from "http-kit";
 import * as Fetch from "http-kit/fetch";
 import { searchParams } from "http-kit/function";
-import * as ResKit from "http-kit/response";
 
 import { Effect, Logger, LoggerLevel, pipe } from "effect";
 
@@ -18,11 +17,11 @@ interface User {
 class ReqRes {
   static getUsers(page?: number) {
     return pipe(
-      Kit.get("https://reqres.in/api/users/", {
+      Http.get("https://reqres.in/api/users/", {
         search: searchParams({ page }),
       }),
-      ResKit.filterStatusOk(),
-      ResKit.toJson<{ data: User[] }>(),
+      Http.filterStatusOk,
+      Http.toJson,
       Effect.map((res) => res.data),
       Effect.tap((data) => Effect.sync(() => console.log(data))),
       Effect.catchAllCause(Effect.logError)
@@ -33,7 +32,7 @@ class ReqRes {
 Effect.runFork(
   pipe(
     ReqRes.getUsers(2),
-    Kit.provide(Fetch.adapter, logger),
-    Logger.withMinimumLogLevel(LoggerLevel.None)
+    Http.provide(Fetch.adapter, logger),
+    Logger.withMinimumLogLevel(LoggerLevel.Error)
   )
 );
