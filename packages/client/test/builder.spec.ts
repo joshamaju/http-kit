@@ -21,7 +21,7 @@ function getUsers() {
 describe("Builder", () => {
   it("should create client", async ({ expect }) => {
     const client = new Builder()
-      .baseUrl("https://reqres.in/api")
+      .setBaseUrl("https://reqres.in/api")
       .setAdapter(Fetch.adapter)
       .build();
 
@@ -40,7 +40,7 @@ describe("Builder", () => {
   it("should not create client because of missing adapter", async ({
     expect,
   }) => {
-    const builder = new Builder().baseUrl("https://reqres.in/api");
+    const builder = new Builder().setBaseUrl("https://reqres.in/api");
     expect(() => builder.build()).toThrow();
   });
 
