@@ -52,20 +52,20 @@ export class Builder {
 
   build(): Client {
     if (!this.adapter) {
-      throw new Error("Provide an adapter");
+      throw new Error("Missing adapter");
     }
 
     const interceptors = pipe(
       O.fromNullable(this.url),
       O.map(baseURLInterceptor),
       O.map((interceptor) => [...this.interceptors, interceptor]),
-      O.getOrElse(() => [])
+      O.getOrElse(() => this.interceptors)
     );
 
     return new Client({ interceptors, adapter: this.adapter });
   }
 
-  baseUrl(url: string) {
+  setBaseUrl(url: string) {
     this.url = url;
     return this;
   }

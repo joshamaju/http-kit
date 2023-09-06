@@ -11,7 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "effect": "2.0.0-next.22",
-    "http-kit": "workspace:*"
+    "http-kit": "workspace:*",
+    "client": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.1.6",
