@@ -1,7 +1,7 @@
 {
-  "name": "client",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@http-kit/client",
+  "version": "0.0.1",
+  "description": "Http Client for the Http-Kit package",
   "type": "module",
   "scripts": {
     "test": "vitest",
