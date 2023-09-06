@@ -1,59 +1,60 @@
 import { pipe } from "@effect/data/Function";
 import * as Predicate from "@effect/data/Predicate";
 import * as Effect from "@effect/io/Effect";
-import { HttpError } from "./exception.js";
 import { Res } from "./types.js";
 
-export class JsonParseError {
-  readonly _tag = "JsonParseError";
-
-  constructor(readonly response: Response, readonly message: string) {
-    // super(message);
-  }
+export class DecodeError {
+  readonly _tag = "DecodeError";
+  constructor(readonly response: Response, readonly message?: string) {}
 }
 
 export class StatusError {
   readonly _tag = "StatusError";
-
-  constructor(readonly response: Response, readonly message: string) {
-    // super(message);
-  }
+  constructor(readonly response: Response, readonly message?: string) {}
 }
 
-export function toJson<T>() {
+function to<B, E>(
+  tryer: (a: Res) => Promise<B>,
+  catcher: (response: Res, error: unknown) => E
+) {
   return <R, E, A extends Res>(fx: Effect.Effect<R, E, A>) => {
     return pipe(
       fx,
-      Effect.flatMap((res) => {
-        return Effect.tryPromise({
-          try: () => res.json() as Promise<T>,
-          catch: () => new JsonParseError(res, "Unable to parse JSON"),
-        });
-      })
+      Effect.flatMap((res) =>
+        Effect.tryPromise({
+          try: () => tryer(res),
+          catch: (e) => catcher(res, e),
+        })
+      )
     );
   };
 }
 
-function to<B>(fn: (a: Res) => Promise<B>) {
-  return () =>
-    <R, E, A extends Res>(effect: Effect.Effect<R, E, A>) => {
-      return pipe(
-        effect,
-        Effect.flatMap((res) =>
-          Effect.tryPromise({
-            try: () => fn(res),
-            catch: (e) => new HttpError("Decode error", e),
-          })
-        )
-      );
-    };
-}
+export const toText = to(
+  (res) => res.text(),
+  (res) => new DecodeError(res, "Unable to decode Text")
+);
 
-export const toText = to((res) => res.text());
+export const toJson = to(
+  (res) => res.json(),
+  (res) => new DecodeError(res, "Unable to decode JSON")
+);
 
-export const toArrayBuffer = to((res) => res.arrayBuffer());
+export const toJsonT = <T>() =>
+  to(
+    (res) => res.json() as Promise<T>,
+    (res) => new DecodeError(res, "Unable to decode JSON")
+  );
 
-export const toBlob = to((res) => res.blob());
+export const toArrayBuffer = to(
+  (res) => res.arrayBuffer(),
+  (res) => new DecodeError(res, "Unable to decode to ArrayBuffer")
+);
+
+export const toBlob = to(
+  (res) => res.blob(),
+  (res) => new DecodeError(res, "Unable to decode to Blob")
+);
 
 export function filterStatus<A extends Res>(func: Predicate.Predicate<number>) {
   return <R, E>(fx: Effect.Effect<R, E, A>) => {
@@ -70,6 +71,14 @@ export function filterStatus<A extends Res>(func: Predicate.Predicate<number>) {
   };
 }
 
-export function filterStatusOk() {
-  return filterStatus((status) => status >= 200 && status < 300);
+export function filterStatusOk<R, E, A extends Res>(
+  fx: Effect.Effect<R, E, A>
+) {
+  return pipe(
+    fx,
+    Effect.filterOrElse(
+      (res) => res.ok,
+      (res) => Effect.fail(new StatusError(res))
+    )
+  );
 }
