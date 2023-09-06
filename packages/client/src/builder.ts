@@ -46,7 +46,7 @@ export class Builder {
     return new Builder({
       url: builder.url,
       adapter: builder.adapter,
-      interceptors: builder.interceptors,
+      interceptors: [...builder.interceptors],
     });
   }
 
@@ -59,7 +59,7 @@ export class Builder {
       O.fromNullable(this.url),
       O.map(baseURLInterceptor),
       O.map((interceptor) => [...this.interceptors, interceptor]),
-      O.getOrElse(() => this.interceptors)
+      O.getOrElse(() => [...this.interceptors])
     );
 
     return new Client({ interceptors, adapter: this.adapter });
