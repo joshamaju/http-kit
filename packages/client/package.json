@@ -6,22 +6,23 @@
   "scripts": {
     "test": "vitest",
     "dev": "tsc --w",
-    "prepublish": "pnpm test && pnpm clean && pnpm build"
+    "build": "tsc",
+    "prepublish": "pnpm clean && pnpm build"
   },
   "keywords": [],
   "author": "Joshua Amaju",
   "license": "ISC",
   "devDependencies": {
+    "@effect/data": "^0.17.0",
+    "@effect/io": "^0.36.1",
     "http-kit": "workspace:^",
     "typescript": "^5.1.6",
     "vitest": "^0.33.0"
   },
   "peerDependencies": {
-    "http-kit": "workspace:^"
-  },
-  "dependencies": {
     "@effect/data": "^0.17.0",
-    "@effect/io": "^0.36.1"
+    "@effect/io": "^0.36.1",
+    "http-kit": "workspace:^"
   },
   "exports": {
     ".": {
