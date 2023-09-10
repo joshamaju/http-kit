@@ -3,19 +3,38 @@
   "version": "0.0.1",
   "description": "Http Client for the Http-Kit package",
   "type": "module",
+  "homepage": "https://github.com/joshamaju/http-kit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshamaju/http-kit",
+    "directory": "packages/client"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "vitest",
     "dev": "tsc --w",
     "build": "tsc",
+    "clean": "rimraf dist",
     "prepublish": "pnpm clean && pnpm build"
   },
-  "keywords": [],
+  "keywords": [
+    "http-kit",
+    "http",
+    "http client",
+    "network"
+  ],
   "author": "Joshua Amaju",
   "license": "ISC",
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@effect/data": "^0.17.0",
     "@effect/io": "^0.36.1",
     "http-kit": "workspace:^",
+    "rimraf": "^5.0.1",
     "typescript": "^5.1.6",
     "vitest": "^0.33.0"
   },
