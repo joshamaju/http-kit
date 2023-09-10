@@ -16,11 +16,4 @@ export type Interceptor = {
   readonly name?: string;
   request?: RequestInterceptor;
   response?: ResponseInterceptor;
-} & (
-  | {
-      request: RequestInterceptor;
-    }
-  | {
-      response: ResponseInterceptor;
-    }
-);
+} & ({ request: RequestInterceptor } | { response: ResponseInterceptor });

@@ -1,8 +1,8 @@
 import { Interceptor, RequestEffectT, provide } from "http-kit";
 import { Adapter } from "http-kit/interpreter";
 
-import { runPromise, Effect } from "@effect/io/Effect";
 import { Tag } from "@effect/data/Context";
+import { Effect, runPromise } from "@effect/io/Effect";
 
 interface Options {
   adapter: Adapter;
@@ -24,6 +24,4 @@ export class Client {
   }
 }
 
-const Tag_ = Tag<Client>("@http-kit/client");
-
-export { Tag_ as Tag };
+export const tag = Tag<Client>("@http-kit/client/Client");
