@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "dev": "tsc --w"
+    "dev": "tsc --w",
+    "prepublish": "pnpm test && pnpm clean && pnpm build"
   },
   "keywords": [],
   "author": "Joshua Amaju",
