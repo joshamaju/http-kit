@@ -15,7 +15,7 @@ import * as Either from "@effect/data/Either";
 import { Builder } from "../src/builder.js";
 
 function getUsers() {
-  return pipe(Http.get("/users"), Res.toJson<{ age: number }>());
+  return pipe(Http.get("/users"), Res.toJsonT<{ age: number }>());
 }
 
 describe("Builder", () => {
