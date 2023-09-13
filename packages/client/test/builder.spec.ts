@@ -1,21 +1,25 @@
-import { describe, it } from "vitest";
-import { inspect } from "node:util";
+import { beforeEach, describe, it } from "vitest";
 
 import * as Http from "http-kit";
-import * as Res from "http-kit/response";
 import * as Fetch from "http-kit/fetch";
+import * as Res from "http-kit/response";
 
-import * as Exit from "@effect/io/Exit";
+import * as Either from "@effect/data/Either";
+import { pipe } from "@effect/data/Function";
 import * as Effect from "@effect/io/Effect";
+import * as Exit from "@effect/io/Exit";
 import * as Logger from "@effect/io/Logger";
 import * as LoggerLevel from "@effect/io/Logger/Level";
-import { pipe } from "@effect/data/Function";
-import * as Either from "@effect/data/Either";
 
+import { Client } from "src/client.js";
 import { Builder } from "../src/builder.js";
+import { User } from "./types.js";
 
 function getUsers() {
-  return pipe(Http.get("/users"), Res.toJsonT<{ age: number }>());
+  return pipe(
+    Http.get("/users"),
+    Res.toJsonT<{ page: number; data: Array<User> }>()
+  );
 }
 
 describe("Builder", () => {
@@ -27,7 +31,7 @@ describe("Builder", () => {
 
     const result = await pipe(
       getUsers(),
-      client.make,
+      client.provide,
       Effect.tap(Effect.logDebug),
       Effect.tapError(Effect.logFatal),
       Logger.withMinimumLogLevel(LoggerLevel.Debug),
@@ -54,5 +58,27 @@ describe("Builder", () => {
     expect((result as Either.Left<any, any>).left).toBeInstanceOf(
       Http.HttpError
     );
+  });
+});
+
+describe("Client handlers", () => {
+  let client: Client;
+
+  beforeEach(() => {
+    client = new Builder()
+      .setBaseUrl("https://reqres.in/api")
+      .setAdapter(Fetch.adapter)
+      .build();
+  });
+
+  it("get/post handlers", async ({ expect }) => {
+    const result = await pipe(
+      client.get("/users"),
+      Res.toJson,
+      Effect.either,
+      Effect.runPromise
+    );
+
+    expect(Either.isRight(result)).toBeTruthy();
   });
 });
