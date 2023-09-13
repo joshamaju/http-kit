@@ -1,57 +1,53 @@
 # Http Kit
 
-Compose requests and responses without worrying about the execution environment
-
 ## Features
 
-- Supports Request and Response interceptors
-- Native Web Platform APIs
+- Supports interceptors
+- Uses Native Web Platform APIs
 - Type safety, correctly typed responses and errors
-- Cross platform i.e Deno, Node etc
-- Inversion of control i.e Dependency injection
-- Extendable using adapters
-- Request and Response utilities
-- Dependency injection (powered by `effect`)
+- Cross platform i.e Deno, Node etc using adapters
 
-## Install
+## Getting started
 
 ```bash
-npm i effect
-npm i http-kit
+npm i http-kit @http-kit/client
+npm i @effect/io @effect/data
 ```
-
-> Http Kit depends on the `effect` package
-
-## Example
 
 ```ts
-import * as Req from "http-kit/request";
-import * as Res from "http-kit/response";
-import * as Fetcher from 'http-kit/fetch';
+import * as Http from "http-kit";
+import * as HttpClient from "@http-kit/client";
+import * as FetchAdapter from "http-kit/fetch";
 
-type User = {id: string, name: string};
+const client = new HttpClient.Builder()
+  .setBaseUrl("https://reqres.in/api")
+  .setAdapter(FetchAdapter.adapter)
+  .build();
 
-const get_users = pipe(
-    Req.get('http://localhost:3000/api/users'),
-    Res.filterStatusOk(),
-    Res.parseJson<User>()
-)
+const getUser = Effect.gen(function* (_) {
+  const http = yield* _(HttpClient.HttpClient);
 
-const users = await Fetcher.execute(get_users)
+  return yield* _(
+    http.get("/users/2"),
+    Http.filterStatusOk,
+    Http.toJson,
+    Effect.map((_) => _.data),
+    Effect.flatMap(S.parse(User))
+  );
+}).pipe(
+  Effect.tap((data) => Effect.sync(() => console.log(data))),
+  Effect.tapErrorCause((error) => Effect.sync(() => console.error(error)))
+);
+
+Effect.runFork(
+  pipe(
+    getUser,
+    Effect.provideLayer(client.makeLayer()),
+    Logger.withMinimumLogLevel(LoggerLevel.Debug)
+  )
+);
 ```
 
-### Interceptors
+## Examples
 
-```ts
-const users = await Fetcher.execute(get_users, [
-    {
-        name: 'attach-token-interceptor',
-        request(req) {
-            const clone = req.clone();
-            const headers = new Headers(clone.headers);
-            headers.set('Authorization', 'token');
-            return Effect.succeed(new Req.Request(clone.url, {...clone.init, headers}))
-        }
-    }
-])
-```
+[link](playground/basic)
