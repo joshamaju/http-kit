@@ -19,6 +19,7 @@ import { flow } from "@effect/data/Function";
 import { Effect, runPromise } from "@effect/io/Effect";
 import { RequestInit_ } from "http-kit/request";
 import { succeed } from "@effect/io/Layer";
+import type { Layer } from "@effect/io/Layer";
 
 interface Options {
   adapter: Adapter;
@@ -57,7 +58,7 @@ export class Client {
     return provide(this.options.adapter, ...this.options.interceptors)(request);
   }
 
-  makeLayer() {
+  makeLayer(): Layer<never, never, Client> {
     return succeed(HttpClient, this);
   }
 
