@@ -1,0 +1,25 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev"
+  },
+  "keywords": [],
+  "author": "Joshua Amaju",
+  "license": "ISC",
+  "dependencies": {
+    "@effect/data": "^0.17.0",
+    "@effect/io": "^0.36.1",
+    "@effect/schema": "^0.31.0",
+    "effect": "2.0.0-next.22",
+    "effect-log": "^0.6.2",
+    "http-kit": "workspace:*",
+    "@http-kit/client": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6",
+    "vite": "^4.3.9"
+  }
+}
