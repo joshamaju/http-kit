@@ -21,16 +21,17 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
         const run = interceptor.request.bind(interceptor);
 
         const result = yield* s(
-          E.logDebug("Executing interceptor"),
-          E.flatMap(() => run(mutable_request)),
-          E.tap(() => E.logDebug("Exiting interceptor")),
-          E.annotateLogs("interceptor", name),
+          E.logDebug("Interceptor ->"),
           E.annotateLogs("type", "Request"),
+          E.annotateLogs("interceptor", name),
+          E.flatMap(() => run(mutable_request)),
+          E.tap(() => E.logDebug("<- Interceptor")),
           E.withLogSpan("ms")
         );
 
         if (interpreter.isResponse(result)) {
           request_response = result;
+          yield* s(E.logDebug("Request -> Response"));
           break;
         } else {
           mutable_request = result;
@@ -42,9 +43,11 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
     let mutable_response = interpreter.isResponse(request_response)
       ? request_response
       : yield* s(
-          E.logDebug("Executing request"),
+          E.logDebug("-> Request"),
+          E.annotateLogs("url", mutable_request.url),
+          E.annotateLogs("method", mutable_request.init.method ?? "GET"),
           E.flatMap(() => interpreter.execute(mutable_request)),
-          E.tap(() => E.logDebug("Request done")),
+          E.tap(() => E.logDebug("Response <-")),
           E.withLogSpan("ms")
         );
 
@@ -56,11 +59,11 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
         const run = interceptor.response.bind(interceptor);
 
         mutable_response = yield* s(
-          E.logDebug("Executing interceptor"),
-          E.flatMap(() => run(mutable_response, mutable_request)),
-          E.tap(() => E.logDebug("Exiting interceptor")),
-          E.annotateLogs("interceptor", name),
+          E.logDebug("Interceptor ->"),
           E.annotateLogs("type", "Response"),
+          E.annotateLogs("interceptor", name),
+          E.flatMap(() => run(mutable_response, mutable_request)),
+          E.tap(() => E.logDebug("<- Interceptor")),
           E.withLogSpan("ms")
         );
       }
