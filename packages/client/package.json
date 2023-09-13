@@ -1,6 +1,6 @@
 {
   "name": "@http-kit/client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Http Client for the Http-Kit package",
   "type": "module",
   "homepage": "https://github.com/joshamaju/http-kit",
