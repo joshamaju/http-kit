@@ -33,6 +33,6 @@ Effect.runFork(
   pipe(
     ReqRes.getUsers(2),
     Http.provide(Fetch.adapter, logger),
-    Logger.withMinimumLogLevel(LoggerLevel.Error)
+    Logger.withMinimumLogLevel(LoggerLevel.Debug)
   )
 );
