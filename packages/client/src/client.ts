@@ -10,6 +10,7 @@ import {
   post,
   provide,
   put,
+  request,
 } from "http-kit";
 import { Adapter } from "http-kit/interpreter";
 
@@ -37,6 +38,8 @@ export class Client {
     this.provide = this.provide.bind(this);
     this.execute = this.execute.bind(this);
   }
+
+  request = flow(request, this.provide.bind(this));
 
   get = flow(get, filterStatusOk, this.provide.bind(this));
 
