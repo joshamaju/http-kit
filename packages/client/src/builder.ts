@@ -9,8 +9,8 @@ import { Client } from "./client.js";
 import { HttpRequest } from "http-kit/request";
 
 interface Options {
-  url?: string;
-  adapter?: Adapter;
+  url?: string | null;
+  adapter?: Adapter | null;
   interceptors?: Array<Interceptor>;
 }
 
@@ -32,14 +32,14 @@ function baseURLInterceptor(baseUrl: string): Interceptor {
 }
 
 export class Builder {
-  protected url?: string;
-  protected adapter!: Adapter;
+  protected url?: string | null;
+  protected adapter?: Adapter | null;
   protected interceptors: Array<Interceptor> = [];
 
   constructor(options: Options = {}) {
     this.url = options.url;
+    this.adapter = options.adapter;
     this.interceptors = options.interceptors ?? [];
-    if (options.adapter) this.adapter = options.adapter;
   }
 
   static from(builder: Builder) {
@@ -65,7 +65,7 @@ export class Builder {
     return new Client({ interceptors, adapter: this.adapter });
   }
 
-  setBaseUrl(url: string) {
+  setBaseUrl(url: string | null) {
     this.url = url;
     return this;
   }
