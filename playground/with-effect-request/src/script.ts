@@ -1,18 +1,16 @@
-import { Err } from "http-kit";
-import * as Kit from "http-kit";
+import * as Http from "http-kit";
 import { json } from "http-kit/body";
-import * as Req from "http-kit/request";
 import * as Fetch from "http-kit/fetch";
 import { searchParams } from "http-kit/function";
-import { JsonParseError, filterStatusOk, toJson } from "http-kit/response";
+import { filterStatusOk, toJsonT } from "http-kit/response";
 
 import {
   Duration,
-  pipe,
   Effect,
   Request,
   RequestResolver,
   Schedule,
+  pipe,
 } from "effect";
 
 interface User {
@@ -28,36 +26,44 @@ const url = "https://reqres.in/api/users";
 class ReqRes {
   static getUsers(page?: number) {
     return pipe(
-      Req.get(url, { search: searchParams({ page }) }),
-      filterStatusOk(),
-      toJson<{ data: User[] }>(),
+      Http.get(url, { search: searchParams({ page }) }),
+      filterStatusOk,
+      toJsonT<{ data: User[] }>(),
       Effect.map((res) => res.data)
     );
   }
 
   static getUser(id: number) {
     return pipe(
-      Req.get(`${url}/${id}`),
-      filterStatusOk(),
-      toJson<{ data: User }>(),
+      Http.get(`${url}/${id}`),
+      filterStatusOk,
+      toJsonT<{ data: User }>(),
       Effect.map((res) => res.data)
     );
   }
 
   static sendEmail({ text, address }: { address: string; text: string }) {
     return pipe(
-      Req.post(url, json({ name: text, job: address })),
-      filterStatusOk()
+      Http.post(url, json({ name: text, job: address })),
+      filterStatusOk
     );
   }
 }
 
-interface GetUsers extends Request.Request<Err | JsonParseError, User[]> {
+interface GetUsers
+  extends Request.Request<
+    Http.HttpError | Http.DecodeError | Http.StatusError,
+    User[]
+  > {
   readonly _tag: "GetUsers";
   readonly page?: number;
 }
 
-interface GetUserById extends Request.Request<Err | JsonParseError, User> {
+interface GetUserById
+  extends Request.Request<
+    Http.HttpError | Http.DecodeError | Http.StatusError,
+    User
+  > {
   readonly _tag: "GetUserById";
   readonly id: number;
 }
@@ -66,7 +72,11 @@ const GetUsers = Request.tagged<GetUsers>("GetUsers");
 
 const GetUserById = Request.tagged<GetUserById>("GetUserById");
 
-interface SendEmail extends Request.Request<Err | JsonParseError, void> {
+interface SendEmail
+  extends Request.Request<
+    Http.HttpError | Http.DecodeError | Http.StatusError,
+    void
+  > {
   readonly _tag: "SendEmail";
   readonly address: string;
   readonly text: string;
@@ -76,7 +86,7 @@ const SendEmail = Request.tagged<SendEmail>("SendEmail");
 
 const GetUsersResolver = RequestResolver.fromFunctionEffect(
   (request: GetUsers) =>
-    pipe(ReqRes.getUsers(request.page), Kit.provide(Fetch.adapter))
+    pipe(ReqRes.getUsers(request.page), Http.provide(Fetch.adapter))
 );
 
 const GetUserByIdResolver = RequestResolver.makeBatched(
@@ -93,7 +103,7 @@ const GetUserByIdResolver = RequestResolver.makeBatched(
           return Request.completeEffect(request, Effect.fail(error));
         });
       }),
-      Kit.provide(Fetch.adapter)
+      Http.provide(Fetch.adapter)
     );
   }
 );
@@ -112,7 +122,7 @@ const SendEmailResolver = RequestResolver.makeBatched(
           return Request.completeEffect(request, Effect.fail(error));
         });
       }),
-      Kit.provide(Fetch.adapter)
+      Http.provide(Fetch.adapter)
     );
   }
 );
@@ -152,8 +162,3 @@ const program = pipe(
 );
 
 Effect.runFork(program);
-
-pipe(
-  Effect.succeed(10),
-  Effect.flatMap((n) => Effect.fail(""))
-);
