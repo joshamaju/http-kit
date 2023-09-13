@@ -1,6 +1,5 @@
-import * as Kit from "http-kit";
+import * as Http from "http-kit";
 import * as Fetch from "http-kit/fetch";
-import { searchParams } from "http-kit/function";
 
 import * as S from "@effect/schema/Schema";
 
@@ -14,27 +13,20 @@ const User = S.struct({
   first_name: S.string,
 });
 
-type User = S.To<typeof User>;
-
-const api = "https://reqres.in/api";
-
-function getUsers(page?: number) {
-  return pipe(
-    Kit.get(`${api}/users/?age=10`, { search: searchParams({ page }) }),
-    Kit.filterStatusOk(),
-    // Kit.toBlob(),
-    Kit.toJson<{ data: User[] }>(),
-    Effect.map((_) => _.data)
-    // Effect.flatMap(S.parse(S.array(User))),
-    // Effect.tap((data) => Effect.sync(() => console.log(data))),
-    // Effect.catchAllCause(Effect.logError)
-  );
-}
+const getUser = pipe(
+  Http.get("https://reqres.in/api/users/20"),
+  Http.filterStatusOk,
+  Http.toJson,
+  Effect.map((_) => _.data),
+  Effect.flatMap(S.parse(User)),
+  Effect.tap((data) => Effect.sync(() => console.log(data))),
+  Effect.tapErrorCause((error) => Effect.sync(() => console.error(error)))
+);
 
 Effect.runFork(
   pipe(
-    getUsers(2),
-    Effect.provideSomeLayer(Kit.makeLayer(Fetch.adapter)),
+    getUser,
+    Http.provide(Fetch.adapter),
     Logger.withMinimumLogLevel(LoggerLevel.Debug)
   )
 );
