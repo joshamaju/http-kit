@@ -4,14 +4,12 @@ import * as Fetch from "http-kit/fetch";
 import { searchParams } from "http-kit/function";
 import { filterStatusOk, toJsonT } from "http-kit/response";
 
-import {
-  Duration,
-  Effect,
-  Request,
-  RequestResolver,
-  Schedule,
-  pipe,
-} from "effect";
+import * as Effect from "@effect/io/Effect";
+import { pipe } from "@effect/data/Function";
+import * as Schedule from "@effect/io/Schedule";
+import * as Duration from "@effect/data/Duration";
+import * as Request from "@effect/io/Request";
+import * as RequestResolver from "@effect/io/RequestResolver";
 
 interface User {
   id: number;

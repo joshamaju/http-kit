@@ -3,7 +3,10 @@ import * as Fetch from "http-kit/fetch";
 
 import * as S from "@effect/schema/Schema";
 
-import { Effect, Logger, LoggerLevel, pipe } from "effect";
+import * as Effect from "@effect/io/Effect";
+import { pipe } from "@effect/data/Function";
+import * as Logger from "@effect/io/Logger";
+import * as LoggerLevel from "@effect/io/LogLevel";
 
 const User = S.struct({
   id: S.number,
@@ -23,10 +26,9 @@ const getUser = pipe(
   Effect.tapErrorCause((error) => Effect.sync(() => console.error(error)))
 );
 
-Effect.runFork(
-  pipe(
-    getUser,
-    Http.provide(Fetch.adapter),
-    Logger.withMinimumLogLevel(LoggerLevel.Debug)
-  )
+pipe(
+  getUser,
+  Http.provide(Fetch.adapter),
+  Logger.withMinimumLogLevel(LoggerLevel.Debug),
+  Effect.runFork
 );

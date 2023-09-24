@@ -2,7 +2,10 @@ import * as Http from "http-kit";
 import * as Fetch from "http-kit/fetch";
 import { searchParams } from "http-kit/function";
 
-import { Effect, Logger, LoggerLevel, pipe } from "effect";
+import * as Effect from "@effect/io/Effect";
+import { pipe } from "@effect/data/Function";
+import * as Logger from "@effect/io/Logger";
+import * as LoggerLevel from "@effect/io/LogLevel";
 
 import logger from "./logger.js";
 
@@ -29,10 +32,9 @@ class ReqRes {
   }
 }
 
-Effect.runFork(
-  pipe(
-    ReqRes.getUsers(2),
-    Http.provide(Fetch.adapter, logger),
-    Logger.withMinimumLogLevel(LoggerLevel.Debug)
-  )
+pipe(
+  ReqRes.getUsers(2),
+  Http.provide(Fetch.adapter, logger),
+  Logger.withMinimumLogLevel(LoggerLevel.Debug),
+  Effect.runFork
 );
