@@ -3,7 +3,7 @@ import { HttpError } from "../exception.js";
 import { Executor, Adapter } from "../interpreter.js";
 
 const fetch_: Executor = (req) => {
-  return Effect.tryPromiseInterrupt({
+  return Effect.tryPromise({
     try: (signal) => fetch(req.url, { ...(req.init as RequestInit), signal }),
     catch: (error) => new HttpError("Fetch error", error),
   });
