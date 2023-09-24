@@ -14,7 +14,7 @@ export class StatusError {
 }
 
 function to<B, E>(
-  tryer: (a: Res) => Promise<B>,
+  task: (a: Res) => Promise<B>,
   catcher: (response: Res, error: unknown) => E
 ) {
   return <R, E, A extends Res>(fx: Effect.Effect<R, E, A>) => {
@@ -22,7 +22,7 @@ function to<B, E>(
       fx,
       Effect.flatMap((res) =>
         Effect.tryPromise({
-          try: () => tryer(res),
+          try: () => task(res),
           catch: (e) => catcher(res, e),
         })
       )
@@ -56,12 +56,14 @@ export const toBlob = to(
   (res) => new DecodeError(res, "Unable to decode to Blob")
 );
 
-export function filterStatus<A extends Res>(func: Predicate.Predicate<number>) {
+export function filterStatus<A extends Res>(
+  predicate: Predicate.Predicate<number>
+) {
   return <R, E>(fx: Effect.Effect<R, E, A>) => {
     return pipe(
       fx,
       Effect.filterOrElse(
-        (res) => func(res.status),
+        (res) => predicate(res.status),
         (res) =>
           Effect.fail(
             new StatusError(res, `Received invalid status code: ${res.status}`)
