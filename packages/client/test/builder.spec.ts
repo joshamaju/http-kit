@@ -9,7 +9,7 @@ import { pipe } from "@effect/data/Function";
 import * as Effect from "@effect/io/Effect";
 import * as Exit from "@effect/io/Exit";
 import * as Logger from "@effect/io/Logger";
-import * as LoggerLevel from "@effect/io/Logger/Level";
+import * as LoggerLevel from "@effect/io/LogLevel";
 
 import { Client } from "src/client.js";
 import { Builder } from "../src/builder.js";
