@@ -1,10 +1,10 @@
 import * as Http from "http-kit";
 import * as Fetch from "http-kit/fetch";
 
-import * as Effect from "@effect/io/Effect";
-import * as Logger from "@effect/io/Logger";
-import { pipe } from "@effect/data/Function";
-import * as LoggerLevel from "@effect/io/LogLevel";
+import * as Effect from "effect/Effect";
+import * as Logger from "effect/Logger";
+import { pipe } from "effect/Function";
+import * as LoggerLevel from "effect/LogLevel";
 
 const jsonCrackEmbed = document.getElementById("jsoncrackEmbed");
 
