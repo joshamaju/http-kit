@@ -64,10 +64,11 @@
     }
   },
   "devDependencies": {
+    "effect": "2.0.0-next.54",
     "rimraf": "^5.0.1",
     "typescript": "^5.2.2"
   },
   "peerDependencies": {
-    "effect": "^2.0.0-next.54"
+    "effect": "2.0.0-next.54"
   }
 }
