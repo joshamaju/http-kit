@@ -1,9 +1,9 @@
 import { Interceptor } from "http-kit";
 import { Adapter } from "http-kit/interpreter";
 
-import * as Effect from "@effect/io/Effect";
-import * as O from "@effect/data/Option";
-import { pipe } from "@effect/data/Function";
+import * as Effect from "effect/Effect";
+import * as O from "effect/Option";
+import { pipe } from "effect/Function";
 
 import { Client } from "./client.js";
 import { HttpRequest } from "http-kit/request";
