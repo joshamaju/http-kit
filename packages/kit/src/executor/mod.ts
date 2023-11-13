@@ -1,6 +1,6 @@
-import { pipe } from "@effect/data/Function";
-import * as E from "@effect/io/Effect";
-import * as L from "@effect/io/Layer";
+import { pipe } from "effect/Function";
+import * as E from "effect/Effect";
+import * as L from "effect/Layer";
 
 import { Adapter } from "../interpreter.js";
 import { Req, Res } from "../types.js";
@@ -89,5 +89,5 @@ export function makeLayer(
 }
 
 export function provide(adapter: Adapter, ...interceptors: Array<Interceptor>) {
-  return E.provideSomeLayer(makeLayer(adapter, ...interceptors));
+  return E.provide(makeLayer(adapter, ...interceptors));
 }

@@ -1,4 +1,4 @@
-import * as Effect from "@effect/io/Effect";
+import * as Effect from "effect/Effect";
 
 export function searchParams(input: Record<string, any>) {
   return new URLSearchParams(input).toString();

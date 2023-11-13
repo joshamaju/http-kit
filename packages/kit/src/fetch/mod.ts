@@ -1,4 +1,4 @@
-import * as Effect from "@effect/io/Effect";
+import * as Effect from "effect/Effect";
 import { HttpError } from "../exception.js";
 import { Executor, Adapter } from "../interpreter.js";
 
