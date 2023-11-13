@@ -4,12 +4,12 @@ import * as Fetch from "http-kit/fetch";
 import { searchParams } from "http-kit/function";
 import { filterStatusOk, toJsonT } from "http-kit/response";
 
-import * as Effect from "@effect/io/Effect";
-import { pipe } from "@effect/data/Function";
-import * as Schedule from "@effect/io/Schedule";
-import * as Duration from "@effect/data/Duration";
-import * as Request from "@effect/io/Request";
-import * as RequestResolver from "@effect/io/RequestResolver";
+import * as Effect from "effect/Effect";
+import { pipe } from "effect/Function";
+import * as Schedule from "effect/Schedule";
+import * as Duration from "effect/Duration";
+import * as Request from "effect/Request";
+import * as RequestResolver from "effect/RequestResolver";
 
 interface User {
   id: number;
@@ -82,9 +82,8 @@ interface SendEmail
 
 const SendEmail = Request.tagged<SendEmail>("SendEmail");
 
-const GetUsersResolver = RequestResolver.fromFunctionEffect(
-  (request: GetUsers) =>
-    pipe(ReqRes.getUsers(request.page), Http.provide(Fetch.adapter))
+const GetUsersResolver = RequestResolver.fromEffect((request: GetUsers) =>
+  pipe(ReqRes.getUsers(request.page), Http.provide(Fetch.adapter))
 );
 
 const GetUserByIdResolver = RequestResolver.makeBatched(
