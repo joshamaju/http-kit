@@ -1,4 +1,4 @@
-import * as Effect from "@effect/io/Effect";
+import * as Effect from "effect/Effect";
 
 import { isBody } from "../body/util.js";
 import { Adapter } from "../interpreter.js";

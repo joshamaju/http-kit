@@ -1,5 +1,5 @@
-import * as Ctx from "@effect/data/Context";
-import * as Effect from "@effect/io/Effect";
+import * as Ctx from "effect/Context";
+import * as Effect from "effect/Effect";
 import { Res, Req } from "./types.js";
 import { HttpError } from "./exception.js";
 

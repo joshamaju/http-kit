@@ -14,12 +14,12 @@ import {
 } from "http-kit";
 import { Adapter } from "http-kit/interpreter";
 
-import { Tag } from "@effect/data/Context";
-import { flow } from "@effect/data/Function";
-import { Effect, runPromise } from "@effect/io/Effect";
+import { Tag } from "effect/Context";
+import { flow } from "effect/Function";
+import { Effect, runPromise } from "effect/Effect";
 import { RequestInit_ } from "http-kit/request";
-import { succeed } from "@effect/io/Layer";
-import type { Layer } from "@effect/io/Layer";
+import { succeed } from "effect/Layer";
+import type { Layer } from "effect/Layer";
 
 interface Options {
   adapter: Adapter;

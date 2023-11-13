@@ -1,6 +1,6 @@
-import { pipe } from "@effect/data/Function";
-import * as E from "@effect/io/Effect";
-import * as L from "@effect/io/Layer";
+import * as E from "effect/Effect";
+import { pipe } from "effect/Function";
+import * as L from "effect/Layer";
 
 import { Adapter } from "../interpreter.js";
 import { Req, Res } from "../types.js";
@@ -26,7 +26,7 @@ export function execute(request: Req, interceptors?: Array<Interceptor>) {
           E.annotateLogs("interceptor", name),
           E.flatMap(() => run(mutable_request)),
           E.tap(() => E.logDebug("<- Interceptor")),
-          E.withLogSpan("ms")
+          E.withLogSpan("ms"),
         );
 
         if (interpreter.isResponse(result)) {
@@ -89,5 +89,5 @@ export function makeLayer(
 }
 
 export function provide(adapter: Adapter, ...interceptors: Array<Interceptor>) {
-  return E.provideSomeLayer(makeLayer(adapter, ...interceptors));
+  return E.provide(makeLayer(adapter, ...interceptors));
 }

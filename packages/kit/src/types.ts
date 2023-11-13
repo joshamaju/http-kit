@@ -1,4 +1,4 @@
-import type * as Effect from "@effect/io/Effect";
+import type * as Effect from "effect/Effect";
 import { HttpError } from "./exception.js";
 import { Adapter } from "./interpreter.js";
 import { HttpRequest } from "./request/Request.js";

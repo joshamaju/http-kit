@@ -1,15 +1,13 @@
-import * as Effect from "@effect/io/Effect";
-import type { Req, Res } from "../types.js";
-import type { Adapter } from "../interpreter.js";
-import { HttpError } from "../exception.js";
+import * as Effect from "effect/Effect";
 import { HttpRequest } from "../request/Request.js";
+import type { Req, Res } from "../types.js";
 
 export interface RequestInterceptor {
-  (req: HttpRequest): Effect.Effect<Adapter, HttpError, Req | Res>;
+  (req: HttpRequest): Effect.Effect<never , never, Req | Res>;
 }
 
 export interface ResponseInterceptor {
-  (res: Res, req: HttpRequest): Effect.Effect<Adapter, HttpError, Res>;
+  (res: Res, req: HttpRequest): Effect.Effect<never, never, Res>;
 }
 
 export type Interceptor = {

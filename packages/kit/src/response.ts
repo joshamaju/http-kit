@@ -1,6 +1,6 @@
-import { pipe } from "@effect/data/Function";
-import * as Predicate from "@effect/data/Predicate";
-import * as Effect from "@effect/io/Effect";
+import { pipe } from "effect/Function";
+import * as Predicate from "effect/Predicate";
+import * as Effect from "effect/Effect";
 import { Res } from "./types.js";
 
 export class DecodeError {
