@@ -3,13 +3,13 @@ import { it } from "vitest";
 import * as Fetch from "http-kit/fetch";
 import * as Res from "http-kit/response";
 
-import * as Context from "@effect/data/Context";
-import { pipe } from "@effect/data/Function";
-import * as Effect from "@effect/io/Effect";
-import * as Exit from "@effect/io/Exit";
-import * as Layer from "@effect/io/Layer";
-import * as Logger from "@effect/io/Logger";
-import * as LoggerLevel from "@effect/io/LogLevel";
+import * as Context from "effect/Context";
+import { pipe } from "effect/Function";
+import * as Effect from "effect/Effect";
+import * as Exit from "effect/Exit";
+import * as Layer from "effect/Layer";
+import * as Logger from "effect/Logger";
+import * as LoggerLevel from "effect/LogLevel";
 
 import { HttpClient } from "../src/client.js";
 import { Builder } from "../src/builder.js";
@@ -49,7 +49,7 @@ it("should provide dependencies", async ({ expect }) => {
 
   const result = await pipe(
     getUsers(),
-    Effect.provideLayer(live),
+    Effect.provide(live),
     Logger.withMinimumLogLevel(LoggerLevel.Debug),
     Effect.runPromiseExit
   );

@@ -4,12 +4,12 @@ import * as Http from "http-kit";
 import * as Fetch from "http-kit/fetch";
 import * as Res from "http-kit/response";
 
-import * as Either from "@effect/data/Either";
-import { pipe } from "@effect/data/Function";
-import * as Effect from "@effect/io/Effect";
-import * as Exit from "@effect/io/Exit";
-import * as Logger from "@effect/io/Logger";
-import * as LoggerLevel from "@effect/io/LogLevel";
+import * as Either from "effect/Either";
+import { pipe } from "effect/Function";
+import * as Effect from "effect/Effect";
+import * as Exit from "effect/Exit";
+import * as Logger from "effect/Logger";
+import * as LoggerLevel from "effect/LogLevel";
 
 import { Client } from "src/client.js";
 import { Builder } from "../src/builder.js";
