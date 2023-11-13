@@ -1,6 +1,6 @@
 // Logger from https://github.com/honojs/hono/blob/main/src/middleware/logger/index.ts
 
-import * as Effect from "@effect/io/Effect";
+import * as Effect from "effect/Effect";
 import { Interceptor } from "http-kit";
 
 type PrintFunc = (str: string, ...rest: string[]) => void;

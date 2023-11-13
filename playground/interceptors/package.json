@@ -10,7 +10,9 @@
   "author": "Joshua Amaju",
   "license": "ISC",
   "dependencies": {
+    "@effect/schema": "^0.47.7",
     "@http-kit/client": "workspace:*",
+    "effect": "2.0.0-next.54",
     "http-kit": "workspace:*"
   },
   "devDependencies": {
