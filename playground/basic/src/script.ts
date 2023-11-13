@@ -3,10 +3,10 @@ import * as Fetch from "http-kit/fetch";
 
 import * as S from "@effect/schema/Schema";
 
-import * as Effect from "@effect/io/Effect";
-import { pipe } from "@effect/data/Function";
-import * as Logger from "@effect/io/Logger";
-import * as LoggerLevel from "@effect/io/LogLevel";
+import * as Effect from "effect/Effect";
+import { pipe } from "effect/Function";
+import * as Logger from "effect/Logger";
+import * as LoggerLevel from "effect/LogLevel";
 
 const User = S.struct({
   id: S.number,
